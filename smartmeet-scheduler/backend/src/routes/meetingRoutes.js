@@ -1,10 +1,11 @@
 import express from "express";
-import protect from "../middleware/authMiddleware.js";
+import { protect } from "../middleware/authMiddleware.js";
+import { createMeeting, getMeetings } from "../controllers/meetingController.js";
 
 const router = express.Router();
 
-router.get("/", protect, (req, res) => {
-  res.json({ message: `Hello ${req.user.name}, meetings API is working 🚀` });
-});
+// Protected routes
+router.post("/", protect, createMeeting);   // create new meeting
+router.get("/", protect, getMeetings);      // get all meetings of user
 
 export default router;

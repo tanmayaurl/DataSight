@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-const protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
   let token;
 
+  // Check for Bearer token in header
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
@@ -11,10 +12,10 @@ const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(" ")[1];
 
-      // verify token
+      // Decode token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // find user
+      // Attach user to request (excluding password)
       req.user = await User.findById(decoded.id).select("-password");
 
       if (!req.user) {
@@ -23,12 +24,12 @@ const protect = async (req, res, next) => {
 
       next();
     } catch (error) {
-      console.error("JWT error:", error.message);
-      return res.status(401).json({ message: "Not authorized, token failed" });
+      console.error("Auth Middleware Error:", error.message);
+      res.status(401).json({ message: "Not authorized, token failed" });
     }
-  } else {
-    return res.status(401).json({ message: "Not authorized, no token" });
+  }
+
+  if (!token) {
+    res.status(401).json({ message: "No token provided" });
   }
 };
-
-export default protect;
