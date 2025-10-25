@@ -1,34 +1,28 @@
 import Meeting from "../models/Meeting.js";
 
-// @desc    Create new meeting
-// @route   POST /api/meetings
-// @access  Private
 export const createMeeting = async (req, res) => {
-  const { title, date, participants } = req.body;
-
   try {
-    const meeting = new Meeting({
+    const { title, date, participants, notes } = req.body;
+    const meeting = await Meeting.create({
+      user: req.user._id,
       title,
       date,
       participants,
-      createdBy: req.user._id,
+      notes,
     });
-
-    const createdMeeting = await meeting.save();
-    res.status(201).json(createdMeeting);
+    res.status(201).json(meeting);
   } catch (error) {
-    res.status(400).json({ message: "Error creating meeting", error });
+    res.status(400).json({ message: error.message });
   }
 };
 
-// @desc    Get all meetings for logged-in user
-// @route   GET /api/meetings
-// @access  Private
 export const getMeetings = async (req, res) => {
   try {
-    const meetings = await Meeting.find({ createdBy: req.user._id }).populate("participants", "name email");
+    const meetings = await Meeting.find({ user: req.user._id }).sort({
+      date: 1,
+    });
     res.json(meetings);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching meetings", error });
+    res.status(400).json({ message: error.message });
   }
 };

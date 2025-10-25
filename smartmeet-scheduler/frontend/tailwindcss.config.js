@@ -5,7 +5,12 @@ export default {
       "./src/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-      extend: {},
+      extend: {colors: {
+        primary: "#2563EB", // elegant blue accent
+        secondary: "#1E293B", // deep grayish navy
+        accent: "#E2E8F0", // soft gray
+        bgLight: "#F8FAFC", // off-white dashboard background
+      },},
     },
     plugins: [],
   };
